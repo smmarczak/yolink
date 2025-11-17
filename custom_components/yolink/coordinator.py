@@ -61,6 +61,11 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
         if (state_obj := device_state.get("state")) is not None and isinstance(state_obj, dict):
             if (flow_rate := state_obj.get("flowRate")) is not None:
                 device_state["flow_rate"] = flow_rate
+                _LOGGER.debug(
+                    "Extracted flow_rate=%s for device %s",
+                    flow_rate,
+                    self.device.device_id,
+                )
 
         # Extract recent usage amount for water meters
         if (recent_usage := device_state.get("recentUsage")) is not None and isinstance(recent_usage, dict):
@@ -75,7 +80,17 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
         This is called when MQTT messages arrive with real-time device state updates.
         We need to process the data to extract nested fields before setting it.
         """
+        _LOGGER.debug(
+            "MQTT update received for device %s: %s",
+            self.device.device_id,
+            data,
+        )
         processed_data = self._process_device_state(data)
+        _LOGGER.debug(
+            "Processed MQTT data for device %s: %s",
+            self.device.device_id,
+            processed_data,
+        )
         super().async_set_updated_data(processed_data)
 
     async def _async_update_data(self) -> dict:
