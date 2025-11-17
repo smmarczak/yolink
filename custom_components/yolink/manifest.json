@@ -1,6 +1,6 @@
 {
   "domain": "yolink",
-  "name": "YoLink",
+  "name": "YoLink (Custom)",
   "codeowners": ["@matrixd2"],
   "config_flow": true,
   "dependencies": ["auth", "application_credentials"],
