@@ -115,8 +115,9 @@ SENSOR_TYPES: tuple[YoLinkBinarySensorEntityDescription, ...] = (
     ),
     YoLinkBinarySensorEntityDescription(
         key="water_running",
+        state_key="recentUsage",
         translation_key="water_running",
-        value=lambda state: state.get("waterFlowing") if state is not None else None,
+        value=lambda recent: recent.get("amount", 0) > 0 if recent is not None else None,
         should_update_entity=lambda value: value is not None,
         exists_fn=lambda device: (
             device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
