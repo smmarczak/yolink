@@ -1,0 +1,158 @@
+# YoLink Template Sensors - Add these to your configuration.yaml
+#
+# These sensors calculate additional useful metrics from your YoLink devices
+# Copy the sections you want to your configuration.yaml under the 'template:' section
+#
+# More info: https://www.home-assistant.io/integrations/template/
+
+template:
+  - sensor:
+      # Dew Point Calculations for all Temperature/Humidity sensors
+      - name: "Garage Dew Point"
+        unique_id: garage_dew_point
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.garage_thermometer_temperature') | float(0) %}
+          {% set rh = states('sensor.garage_thermometer_humidity') | float(0) %}
+          {% if t and rh %}
+            {{ (t - ((100 - rh) / 5)) | round(1) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "Living Room Dew Point"
+        unique_id: living_room_dew_point
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.living_room_temperature_temperature') | float(0) %}
+          {% set rh = states('sensor.living_room_temperature_humidity') | float(0) %}
+          {% if t and rh %}
+            {{ (t - ((100 - rh) / 5)) | round(1) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "Master Bedroom Dew Point"
+        unique_id: master_bedroom_dew_point
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.master_bedroom_temperature') | float(0) %}
+          {% set rh = states('sensor.master_bedroom_humidity') | float(0) %}
+          {% if t and rh %}
+            {{ (t - ((100 - rh) / 5)) | round(1) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "Outside Dew Point"
+        unique_id: outside_dew_point
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.outside_temp_temperature') | float(0) %}
+          {% set rh = states('sensor.outside_temp_humidity') | float(0) %}
+          {% if t and rh %}
+            {{ (t - ((100 - rh) / 5)) | round(1) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "Sauna Dew Point"
+        unique_id: sauna_dew_point
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.sauna_temperature') | float(0) %}
+          {% set rh = states('sensor.sauna_humidity') | float(0) %}
+          {% if t and rh %}
+            {{ (t - ((100 - rh) / 5)) | round(1) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "Stan4 Room Dew Point"
+        unique_id: stan4_dew_point
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.stan4_room_temperature') | float(0) %}
+          {% set rh = states('sensor.stan4_room_humidity') | float(0) %}
+          {% if t and rh %}
+            {{ (t - ((100 - rh) / 5)) | round(1) %}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      # Heat Index for Sauna (useful when temp > 27°C / 80°F)
+      - name: "Sauna Heat Index"
+        unique_id: sauna_heat_index
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set t = states('sensor.sauna_temperature') | float(0) %}
+          {% set rh = states('sensor.sauna_humidity') | float(0) %}
+          {% if t > 27 and rh %}
+            {# Simplified heat index calculation #}
+            {{ (t + (0.33 * ((rh / 100) * 6.105 * 2.71828 ** ((17.27 * t) / (237.7 + t))) - 4.1)) | round(1) }}
+          {% else %}
+            {{ t | round(1) }}
+          {% endif %}
+
+      # Absolute Humidity (g/m³) - useful for comparing moisture content
+      - name: "Sauna Absolute Humidity"
+        unique_id: sauna_absolute_humidity
+        unit_of_measurement: "g/m³"
+        state: >
+          {% set t = states('sensor.sauna_temperature') | float(0) %}
+          {% set rh = states('sensor.sauna_humidity') | float(0) %}
+          {% if t and rh %}
+            {# Absolute humidity calculation #}
+            {% set sat_vapor_pressure = 6.112 * 2.71828 ** ((17.67 * t) / (t + 243.5)) %}
+            {% set actual_vapor_pressure = (rh / 100) * sat_vapor_pressure %}
+            {{ ((actual_vapor_pressure * 2.1674) / (t + 273.15)) | round(1) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+  - binary_sensor:
+      # Sauna Ready indicator
+      - name: "Sauna Ready"
+        unique_id: sauna_ready
+        device_class: heat
+        state: >
+          {{ states('sensor.sauna_temperature') | float(0) > 60 }}
+
+      # Condensation Risk indicators
+      - name: "Garage Condensation Risk"
+        unique_id: garage_condensation_risk
+        device_class: moisture
+        state: >
+          {% set temp = states('sensor.garage_thermometer_temperature') | float(0) %}
+          {% set dew = states('sensor.garage_dew_point') | float(0) %}
+          {{ (temp - dew) < 3 }}
+
+      - name: "Master Bedroom Condensation Risk"
+        unique_id: bedroom_condensation_risk
+        device_class: moisture
+        state: >
+          {% set temp = states('sensor.master_bedroom_temperature') | float(0) %}
+          {% set dew = states('sensor.master_bedroom_dew_point') | float(0) %}
+          {{ (temp - dew) < 3 }}
+
+      # Comfort level indicators (temp between 18-24°C, humidity 30-60%)
+      - name: "Living Room Comfortable"
+        unique_id: living_room_comfortable
+        state: >
+          {% set t = states('sensor.living_room_temperature_temperature') | float(0) %}
+          {% set rh = states('sensor.living_room_temperature_humidity') | float(0) %}
+          {{ t >= 18 and t <= 24 and rh >= 30 and rh <= 60 }}
+
+      - name: "Master Bedroom Comfortable"
+        unique_id: bedroom_comfortable
+        state: >
+          {% set t = states('sensor.master_bedroom_temperature') | float(0) %}
+          {% set rh = states('sensor.master_bedroom_humidity') | float(0) %}
+          {{ t >= 18 and t <= 24 and rh >= 30 and rh <= 60 }}

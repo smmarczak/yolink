@@ -105,6 +105,15 @@
       },
       "water_meter_reading": {
         "name": "Water meter reading"
+      },
+      "flowRate": {
+        "name": "Flow rate"
+      },
+      "recentUsage": {
+        "name": "Recent usage"
+      },
+      "dailyUsage": {
+        "name": "Daily usage"
       }
     },
     "switch": {

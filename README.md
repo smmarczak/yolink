@@ -4,9 +4,18 @@ This is a custom version of the YoLink integration with additional device suppor
 
 ## Features
 
-This custom integration extends the official YoLink integration with support for:
+This custom integration extends the official YoLink integration with enhanced support for:
 
-- **YS5008-UC Water Meter**: Added real-time water running detection via binary sensor
+### YS5008-UC Water Meter
+- **Real-time water running detection** - Binary sensor using `recentUsage` field
+- **Flow rate sensor** - Gallons per minute (GPM) for instant flow monitoring
+- **Recent usage sensor** - Water used in most recent period
+- **Daily usage sensor** - Total daily water consumption
+- All sensors update in real-time via MQTT
+
+### Additional Resources
+- **[Sensors Guide](SENSORS_GUIDE.md)** - Complete documentation of all sensors and automation examples
+- **[Template Sensors](template_sensors.yaml)** - Optional calculated sensors (dew point, heat index, comfort indicators)
 
 ## Installation via HACS
 
