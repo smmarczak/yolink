@@ -302,9 +302,8 @@ SENSOR_TYPES: tuple[YoLinkSensorEntityDescription, ...] = (
         ),
     ),
     YoLinkSensorEntityDescription(
-        key="flowRate",
+        key="flow_rate",
         translation_key="flowRate",
-        state_key="state",
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         native_unit_of_measurement=UnitOfVolumeFlowRate.GALLONS_PER_MINUTE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -312,19 +311,16 @@ SENSOR_TYPES: tuple[YoLinkSensorEntityDescription, ...] = (
         exists_fn=lambda device: (
             device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
         ),
-        value=lambda state: state.get("flowRate") if state is not None else None,
     ),
     YoLinkSensorEntityDescription(
-        key="recentUsage",
+        key="recent_usage_amount",
         translation_key="recentUsage",
-        state_key="recentUsage",
         native_unit_of_measurement=UnitOfVolume.GALLONS,
         state_class=SensorStateClass.MEASUREMENT,
         should_update_entity=lambda value: value is not None,
         exists_fn=lambda device: (
             device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
         ),
-        value=lambda recent: recent.get("amount") if recent is not None else None,
     ),
     YoLinkSensorEntityDescription(
         key="dailyUsage",
