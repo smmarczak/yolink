@@ -28,6 +28,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import (
+    DEV_MODEL_WATER_METER_YS5008_UC,
     DEV_MODEL_WATER_METER_YS5018_EC,
     DEV_MODEL_WATER_METER_YS5018_UC,
     DOMAIN,
@@ -120,7 +121,11 @@ SENSOR_TYPES: tuple[YoLinkBinarySensorEntityDescription, ...] = (
         exists_fn=lambda device: (
             device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
             and device.device_model_name
-            in [DEV_MODEL_WATER_METER_YS5018_EC, DEV_MODEL_WATER_METER_YS5018_UC]
+            in [
+                DEV_MODEL_WATER_METER_YS5008_UC,
+                DEV_MODEL_WATER_METER_YS5018_EC,
+                DEV_MODEL_WATER_METER_YS5018_UC,
+            ]
         ),
     ),
 )
