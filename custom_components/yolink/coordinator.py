@@ -57,13 +57,22 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
         if device_state is None:
             return {}
 
-        # Extract flowRate from nested state for water meters
+        # Extract fields from nested state for water meters
         if (state_obj := device_state.get("state")) is not None and isinstance(state_obj, dict):
+            # Extract flowRate if present (some models like YS5018)
             if (flow_rate := state_obj.get("flowRate")) is not None:
                 device_state["flow_rate"] = flow_rate
                 _LOGGER.debug(
                     "Extracted flow_rate=%s for device %s",
                     flow_rate,
+                    self.device.device_id,
+                )
+            # Extract waterFlowing for water running detection (YS5008-UC, etc.)
+            if (water_flowing := state_obj.get("waterFlowing")) is not None:
+                device_state["waterFlowing"] = water_flowing
+                _LOGGER.debug(
+                    "Extracted waterFlowing=%s for device %s",
+                    water_flowing,
                     self.device.device_id,
                 )
 

@@ -115,9 +115,9 @@ SENSOR_TYPES: tuple[YoLinkBinarySensorEntityDescription, ...] = (
     ),
     YoLinkBinarySensorEntityDescription(
         key="water_running",
-        state_key="flow_rate",
+        state_key="waterFlowing",
         translation_key="water_running",
-        value=lambda flow_rate: flow_rate > 0 if flow_rate is not None else None,
+        value=lambda flowing: flowing if flowing is not None else None,
         should_update_entity=lambda value: value is not None,
         exists_fn=lambda device: (
             device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
@@ -126,6 +126,66 @@ SENSOR_TYPES: tuple[YoLinkBinarySensorEntityDescription, ...] = (
                 DEV_MODEL_WATER_METER_YS5008_UC,
                 DEV_MODEL_WATER_METER_YS5018_EC,
                 DEV_MODEL_WATER_METER_YS5018_UC,
+            ]
+        ),
+    ),
+    YoLinkBinarySensorEntityDescription(
+        key="amount_overrun",
+        state_key="alarm",
+        translation_key="amount_overrun",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        value=lambda alarm: alarm.get("amountOverrun") if alarm is not None else None,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type
+            in [
+                ATTR_DEVICE_WATER_METER_CONTROLLER,
+                ATTR_DEVICE_MULTI_WATER_METER_CONTROLLER,
+            ]
+        ),
+    ),
+    YoLinkBinarySensorEntityDescription(
+        key="duration_overrun",
+        state_key="alarm",
+        translation_key="duration_overrun",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        value=lambda alarm: alarm.get("durationOverrun") if alarm is not None else None,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type
+            in [
+                ATTR_DEVICE_WATER_METER_CONTROLLER,
+                ATTR_DEVICE_MULTI_WATER_METER_CONTROLLER,
+            ]
+        ),
+    ),
+    YoLinkBinarySensorEntityDescription(
+        key="valve_error",
+        state_key="alarm",
+        translation_key="valve_error",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        value=lambda alarm: alarm.get("valveError") if alarm is not None else None,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type
+            in [
+                ATTR_DEVICE_WATER_METER_CONTROLLER,
+                ATTR_DEVICE_MULTI_WATER_METER_CONTROLLER,
+            ]
+        ),
+    ),
+    YoLinkBinarySensorEntityDescription(
+        key="freeze_error",
+        state_key="alarm",
+        translation_key="freeze_error",
+        device_class=BinarySensorDeviceClass.COLD,
+        value=lambda alarm: alarm.get("freezeError") if alarm is not None else None,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type
+            in [
+                ATTR_DEVICE_WATER_METER_CONTROLLER,
+                ATTR_DEVICE_MULTI_WATER_METER_CONTROLLER,
             ]
         ),
     ),

@@ -46,7 +46,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_running": { "name": "Water is flowing" }
+      "water_running": { "name": "Water is flowing" },
+      "amount_overrun": { "name": "Amount overrun" },
+      "duration_overrun": { "name": "Duration overrun" },
+      "valve_error": { "name": "Valve error" },
+      "freeze_error": { "name": "Freeze error" }
     },
     "number": {
       "config_volume": {
