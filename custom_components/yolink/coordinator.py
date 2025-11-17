@@ -52,6 +52,32 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
         self.dev_online = True
         self.dev_net_type = None
 
+    def _process_device_state(self, device_state: dict) -> dict:
+        """Process device state to extract nested fields for easier sensor access."""
+        if device_state is None:
+            return {}
+
+        # Extract flowRate from nested state for water meters
+        if (state_obj := device_state.get("state")) is not None and isinstance(state_obj, dict):
+            if (flow_rate := state_obj.get("flowRate")) is not None:
+                device_state["flow_rate"] = flow_rate
+
+        # Extract recent usage amount for water meters
+        if (recent_usage := device_state.get("recentUsage")) is not None and isinstance(recent_usage, dict):
+            if (amount := recent_usage.get("amount")) is not None:
+                device_state["recent_usage_amount"] = amount
+
+        return device_state
+
+    def async_set_updated_data(self, data: dict) -> None:
+        """Manually update data, notify listeners, and process nested fields.
+
+        This is called when MQTT messages arrive with real-time device state updates.
+        We need to process the data to extract nested fields before setting it.
+        """
+        processed_data = self._process_device_state(data)
+        super().async_set_updated_data(processed_data)
+
     async def _async_update_data(self) -> dict:
         """Fetch device state."""
         try:
@@ -90,15 +116,7 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
             dev_lora_info = device_state.get(ATTR_LORA_INFO)
             if dev_lora_info is not None:
                 self.dev_net_type = dev_lora_info.get("devNetType")
-            # Extract flowRate from nested state for easier sensor access
-            if (state_obj := device_state.get("state")) is not None and isinstance(state_obj, dict):
-                if (flow_rate := state_obj.get("flowRate")) is not None:
-                    device_state["flow_rate"] = flow_rate
-            # Extract recent usage amount for easier sensor access
-            if (recent_usage := device_state.get("recentUsage")) is not None and isinstance(recent_usage, dict):
-                if (amount := recent_usage.get("amount")) is not None:
-                    device_state["recent_usage_amount"] = amount
-            return device_state
+            return self._process_device_state(device_state)
         return {}
 
     async def call_device(self, request: ClientRequest) -> dict[str, Any]:
