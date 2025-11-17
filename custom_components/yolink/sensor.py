@@ -52,6 +52,7 @@ from homeassistant.const import (
     UnitOfPower,
     UnitOfTemperature,
     UnitOfVolume,
+    UnitOfVolumeFlowRate,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -298,6 +299,41 @@ SENSOR_TYPES: tuple[YoLinkSensorEntityDescription, ...] = (
         should_update_entity=lambda value: value is not None,
         exists_fn=lambda device: (
             device.device_type == ATTR_DEVICE_MULTI_WATER_METER_CONTROLLER
+        ),
+    ),
+    YoLinkSensorEntityDescription(
+        key="flowRate",
+        translation_key="flowRate",
+        state_key="state",
+        device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
+        native_unit_of_measurement=UnitOfVolumeFlowRate.GALLONS_PER_MINUTE,
+        state_class=SensorStateClass.MEASUREMENT,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
+        ),
+        value=lambda state: state.get("flowRate") if state is not None else None,
+    ),
+    YoLinkSensorEntityDescription(
+        key="recentUsage",
+        translation_key="recentUsage",
+        state_key="recentUsage",
+        native_unit_of_measurement=UnitOfVolume.GALLONS,
+        state_class=SensorStateClass.MEASUREMENT,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
+        ),
+        value=lambda recent: recent.get("amount") if recent is not None else None,
+    ),
+    YoLinkSensorEntityDescription(
+        key="dailyUsage",
+        translation_key="dailyUsage",
+        native_unit_of_measurement=UnitOfVolume.GALLONS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        should_update_entity=lambda value: value is not None,
+        exists_fn=lambda device: (
+            device.device_type == ATTR_DEVICE_WATER_METER_CONTROLLER
         ),
     ),
     YoLinkSensorEntityDescription(
