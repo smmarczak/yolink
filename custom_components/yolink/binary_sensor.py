@@ -174,6 +174,16 @@ class YoLinkBinarySensorEntity(YoLinkEntity, BinarySensorEntity):
     @callback
     def update_entity_state(self, state: dict[str, Any]) -> None:
         """Update HA Entity State."""
+        # Debug logging for water_running sensor
+        if self.entity_description.key == "water_running":
+            import logging
+            _LOGGER = logging.getLogger(__name__)
+            _LOGGER.warning(
+                f"YS5008-UC water_running sensor update - Full state: {state}, "
+                f"state_key: {self.entity_description.state_key}, "
+                f"state[state_key]: {state.get(self.entity_description.state_key)}"
+            )
+
         if (
             _attr_val := self.entity_description.value(
                 state.get(self.entity_description.state_key)
