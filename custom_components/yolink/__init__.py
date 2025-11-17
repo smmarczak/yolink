@@ -73,6 +73,15 @@ class YoLinkHomeMessageListener(MessageListener):
 
     def on_message(self, device: YoLinkDevice, msg_data: dict[str, Any]) -> None:
         """On YoLink home message received."""
+        # Debug: Log MQTT messages for YS5008-UC water meters
+        if device.device_model_name == "YS5008-UC":
+            import logging
+            _LOGGER = logging.getLogger(__name__)
+            _LOGGER.warning(
+                f"YS5008-UC MQTT message - Device: {device.device_name}, "
+                f"Data: {msg_data}"
+            )
+
         entry_data = self._hass.data[DOMAIN].get(self._entry.entry_id)
         if not entry_data:
             return
