@@ -137,12 +137,26 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up YoLink Sensor from a config entry."""
+    import logging
+    _LOGGER = logging.getLogger(__name__)
+
     device_coordinators = hass.data[DOMAIN][config_entry.entry_id].device_coordinators
     binary_sensor_device_coordinators = [
         device_coordinator
         for device_coordinator in device_coordinators.values()
         if device_coordinator.device.device_type in SENSOR_DEVICE_TYPE
     ]
+
+    # Debug: Log all water meter devices
+    for coordinator in binary_sensor_device_coordinators:
+        if "WATER_METER" in coordinator.device.device_type:
+            _LOGGER.warning(
+                f"Water meter device found - Type: {coordinator.device.device_type}, "
+                f"Model: {coordinator.device.device_model_name}, "
+                f"Name: {coordinator.device.device_name}, "
+                f"ID: {coordinator.device.device_id}"
+            )
+
     async_add_entities(
         YoLinkBinarySensorEntity(
             config_entry, binary_sensor_device_coordinator, description
@@ -174,6 +188,16 @@ class YoLinkBinarySensorEntity(YoLinkEntity, BinarySensorEntity):
     @callback
     def update_entity_state(self, state: dict[str, Any]) -> None:
         """Update HA Entity State."""
+        # Debug logging for water_running sensor
+        if self.entity_description.key == "water_running":
+            import logging
+            _LOGGER = logging.getLogger(__name__)
+            _LOGGER.warning(
+                f"YS5008-UC water_running sensor update - Full state: {state}, "
+                f"state_key: {self.entity_description.state_key}, "
+                f"state[state_key]: {state.get(self.entity_description.state_key)}"
+            )
+
         if (
             _attr_val := self.entity_description.value(
                 state.get(self.entity_description.state_key)
