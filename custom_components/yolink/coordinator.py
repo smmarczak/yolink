@@ -91,11 +91,11 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
             if dev_lora_info is not None:
                 self.dev_net_type = dev_lora_info.get("devNetType")
             # Extract flowRate from nested state for easier sensor access
-            if (state_obj := device_state.get("state")) is not None:
+            if (state_obj := device_state.get("state")) is not None and isinstance(state_obj, dict):
                 if (flow_rate := state_obj.get("flowRate")) is not None:
                     device_state["flow_rate"] = flow_rate
             # Extract recent usage amount for easier sensor access
-            if (recent_usage := device_state.get("recentUsage")) is not None:
+            if (recent_usage := device_state.get("recentUsage")) is not None and isinstance(recent_usage, dict):
                 if (amount := recent_usage.get("amount")) is not None:
                     device_state["recent_usage_amount"] = amount
             return device_state
