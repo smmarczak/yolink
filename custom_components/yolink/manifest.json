@@ -1,0 +1,12 @@
+{
+  "domain": "yolink",
+  "name": "YoLink",
+  "codeowners": ["@matrixd2"],
+  "config_flow": true,
+  "dependencies": ["auth", "application_credentials"],
+  "documentation": "https://github.com/smmarczak/yolink",
+  "iot_class": "cloud_push",
+  "requirements": ["yolink-api==0.5.8"],
+  "version": "2024.11.17",
+  "issue_tracker": "https://github.com/smmarczak/yolink/issues"
+}
