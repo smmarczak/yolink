@@ -137,12 +137,26 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up YoLink Sensor from a config entry."""
+    import logging
+    _LOGGER = logging.getLogger(__name__)
+
     device_coordinators = hass.data[DOMAIN][config_entry.entry_id].device_coordinators
     binary_sensor_device_coordinators = [
         device_coordinator
         for device_coordinator in device_coordinators.values()
         if device_coordinator.device.device_type in SENSOR_DEVICE_TYPE
     ]
+
+    # Debug: Log all water meter devices
+    for coordinator in binary_sensor_device_coordinators:
+        if "WATER_METER" in coordinator.device.device_type:
+            _LOGGER.warning(
+                f"Water meter device found - Type: {coordinator.device.device_type}, "
+                f"Model: {coordinator.device.device_model_name}, "
+                f"Name: {coordinator.device.device_name}, "
+                f"ID: {coordinator.device.device_id}"
+            )
+
     async_add_entities(
         YoLinkBinarySensorEntity(
             config_entry, binary_sensor_device_coordinator, description

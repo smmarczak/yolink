@@ -90,6 +90,12 @@ class YoLinkCoordinator(DataUpdateCoordinator[dict]):
             dev_lora_info = device_state.get(ATTR_LORA_INFO)
             if dev_lora_info is not None:
                 self.dev_net_type = dev_lora_info.get("devNetType")
+            # Debug: Log YS5008-UC device state
+            if self.device.device_model_name == "YS5008-UC":
+                _LOGGER.warning(
+                    f"YS5008-UC state update - Device: {self.device.device_name}, "
+                    f"Full state: {device_state}"
+                )
             return device_state
         return {}
 
