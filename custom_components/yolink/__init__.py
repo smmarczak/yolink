@@ -23,10 +23,18 @@ from homeassistant.helpers import (
     device_registry as dr,
 )
 from homeassistant.helpers.config_entry_oauth2_flow import (
-    ImplementationUnavailableError,
     OAuth2Session,
     async_get_config_entry_implementation,
 )
+
+# Handle version compatibility - ImplementationUnavailableError added in later HA versions
+try:
+    from homeassistant.helpers.config_entry_oauth2_flow import (
+        ImplementationUnavailableError,
+    )
+except ImportError:
+    # Fallback for older HA versions
+    ImplementationUnavailableError = Exception
 from homeassistant.helpers.typing import ConfigType
 
 from . import api
